@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <link rel="stylesheet" href="{{ mix('/css/app.css') }}" />
+
+  @section('meta')
+  @endsection
+</head>
+<body class="flex flex-col h-full">
+
+  <nav class="bg-white border-b border-gray-100" x-data="{ showingNavigationDropdown: false }">
+    <!-- Primary Navigation Menu -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex">
+          <!-- Logo -->
+          <div class="flex-shrink-0 flex items-center">
+            <a href="/">
+              <img class="block h-9 w-auto" src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg" alt="Workflow">
+            </a>
+          </div>
+        </div>
+
+        <div v-else class="hidden sm:flex sm:items-center sm:ml-6">
+          <a href="/login" class="mr-6">Login</a>
+          <tyr-button href="/register" out>Register</tyr-button>
+        </div>
+
+        <!-- Hamburger -->
+        <div class="-mr-2 flex items-center sm:hidden">
+          <button @click="showingNavigationDropdown = ! showingNavigationDropdown" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+            <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+              <path :class="{'hidden': showingNavigationDropdown, 'inline-flex': ! showingNavigationDropdown }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              <path :class="{'hidden': ! showingNavigationDropdown, 'inline-flex': showingNavigationDropdown }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Responsive Navigation Menu -->
+    <div :class="{'block': showingNavigationDropdown, 'hidden': ! showingNavigationDropdown}" class="sm:hidden">
+      <div v-else class="pt-4 pb-1 border-t border-gray-200 flex flex-column w-full">
+        <a href="/login" class="mr-6">Login</a>
+        <tyr-button href="/register" out>Register</tyr-button>
+      </div>
+    </div>
+  </nav>
+  
+  <div class="bg-gray-100 flex-grow w-full">
+    <main class="max-w-screen-xl mx-auto px-4 lg:px-8 pt-8 w-full h-full pb-16">
+      @section('content')
+      @endsection
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+  @section('scripts')
+  @endsection
+</body>
+</html>
