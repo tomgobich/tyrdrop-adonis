@@ -1,4 +1,5 @@
-# InertiaJS + Vue3 + Tailwind CSS 2.0 + AdonisJS 5 Bolierplate
+# TyrDrop
+Personal finance statistics and tracking app
 
 ## Installation
 
