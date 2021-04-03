@@ -1,0 +1,74 @@
+@layout('layouts/auth')
+
+@section('content')
+
+  <div class="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="bg-gray-900 sm:mx-auto sm:w-full sm:max-w-md bg-gray-100 sm:rounded-t-lg shadow relative">
+      <div class="w-full flex justify-center absolute -top-8">
+        <figure class="bg-gray-100 flex items-center justify-center text-gray-700 w-16 h-16 border-4 border-white shadow z-10 rounded-full">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 15V17M6 21H18C19.1046 21 20 20.1046 20 19V13C20 11.8954 19.1046 11 18 11H6C4.89543 11 4 11.8954 4 13V19C4 20.1046 4.89543 21 6 21ZM16 11V7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7V11H16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </figure>
+      </div>
+      <h2 class="mt-10 text-center text-3xl font-extrabold text-white">
+        Login to your account
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-300 max-w mb-6">
+        Need an account?
+        <a href="/register" class="font-medium text-blue-300 hover:text-blue-400">
+          Register
+        </a>
+      </p>
+    </div>
+
+    <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
+      <div class="bg-white py-8 px-4 shadow sm:rounded-b-lg sm:px-10">
+        <form action="/login" method="POST">
+          {{ csrfField() }}
+
+          @!component('honeypot')
+
+          @if (flashMessages.get('errors.form'))
+            <div role="alert" class="bg-red-100 text-red-700 rounded p-3 mb-4">
+              {{  flashMessages.get('errors.form') }}
+            </div>
+          @endif
+
+          @component('components/input', {
+            type: 'email',
+            label: 'Email',
+            name: 'email',
+            autocomplete: 'email',
+            value: flashMessages.get('email') || '',
+            error: flashMessages.get('errors.email'),
+            required: true
+          })
+          @endcomponent
+
+          @component('components/input', {
+            type: 'password',
+            label: 'Password',
+            name: 'password',
+            autocomplete: 'current-password',
+            value: '',
+            error: flashMessages.get('errors.password'),
+            required: true,
+            min: 8,
+          })
+          @endcomponent
+
+          <div class="flex items-center justify-end mt-4">
+            <a class="underline text-sm text-gray-600 hover:text-gray-900" href="/forgot-password">
+              Forgot your password?
+            </a>
+            <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray disabled:opacity-25 transition ease-in-out duration-150 ml-4">
+              Login
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+@endsection

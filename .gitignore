@@ -1,0 +1,11 @@
+node_modules
+build
+coverage
+.vscode
+.DS_STORE
+.env
+tmp
+mix-manifest.json
+public/css
+public/js
+.editorconfig
