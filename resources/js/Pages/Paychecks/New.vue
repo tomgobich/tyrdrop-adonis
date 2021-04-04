@@ -8,14 +8,14 @@
 
     <div class="py-12 max-w-7xl mx-auto sm:px-6 lg:px-8">
       <form @submit.prevent="form.post('/paychecks/store')">
-        <tyr-form-section @submitted="addPaycheck">
+        <tyr-form-section>
           <template #title>
             Paycheck Information
           </template>
 
           <template #description>
             Financial information that can be found on your paycheck.
-            <tyr-button @click.native="copyValuesFromLast" class="mt-3">
+            <tyr-button @click.native="copyValuesFromLast" class="mt-3" type="button">
               Copy values from last paycheck
             </tyr-button>
           </template>
@@ -186,20 +186,18 @@
       TyrTextarea,
       TyrCurrencyInput
     },
-    setup() {
+    setup(props) {
       const form = useForm({
         'date': DateTime.local().toFormat('yyyy-MM-dd'),
         'notes': '',
         ...paycheckFormFields
       })
 
-      const textarea = ref('test')
-
       function copyValuesFromLast() {
-        this.form = this.$inertia.form({
-          date: this.form.date,
-          ...this.getFormFields(this.lastPaycheck)
-        })
+        const fields = getFormFields(props.lastPaycheck)
+        for (let key in fields) {
+          form.value[key] = fields[key]
+        }
       }
 
       function getFormFields(defaultData) {
@@ -224,40 +222,5 @@
         copyValuesFromLast,
       }
     }
-
-    // props: {
-    //   lastPaycheck: Object
-    // },
-
-    // components: {
-    //   Layout,
-    //   TyrFormSection,
-    //   TyrButton,
-    //   TyrInput,
-    //   TyrInputError,
-    //   TyrTextarea,
-    //   TyrCurrencyInput
-    // },
-
-    // data() {
-    //   return {
-    //     incomeFields: [...incomeFields],
-    //     taxFields: [...taxFields],
-    //     deductionFields: [...deductionFields],
-    //     snapshotFields: [...snapshotFields],
-    //     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    //     form: this.$inertia.form({
-    //       'date': DateTime.local().toFormat('yyyy/MM/dd'),
-    //       'notes': '',
-    //       ...paycheckFormFields
-    //     }, {
-    //       bag: 'paycheckForm'
-    //     })
-    //   }
-    // },
-
-    // methods: {
-    //   
-    // }
   }
 </script>

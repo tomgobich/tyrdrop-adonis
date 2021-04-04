@@ -127,6 +127,46 @@
         </div>
       </div>
     </div>
+
+    <tyr-dialog-modal :show="confirmingPaycheckDeletion" @close="confirmingPaycheckDeletion = false">
+      <template #title>
+        Delete Paycheck
+      </template>
+
+      <template #content>
+        Are you sure you want to permanantly delete this paycheck?
+        This will be reflected on your balances and forecasts.
+
+        <div class="mt-4">
+          <tyr-table>
+            <template #head>
+              <tyr-table-heading>Date</tyr-table-heading>
+              <tyr-table-heading>Gross Income</tyr-table-heading>
+              <tyr-table-heading>Taxable Income</tyr-table-heading>
+              <tyr-table-heading>Net Income</tyr-table-heading>
+            </template>
+            <template #rows>
+              <tr>
+                <tyr-table-data>{{ pendingPaycheck.date_display }}</tyr-table-data>
+                <tyr-table-data>{{ pendingPaycheck.gross_income }}</tyr-table-data>
+                <tyr-table-data>{{ pendingPaycheck.taxable_income }}</tyr-table-data>
+                <tyr-table-data>{{ pendingPaycheck.net_income }}</tyr-table-data>
+              </tr>
+            </template>
+          </tyr-table>
+      </div>
+    </template>
+
+    <template #footer>
+      <tyr-secondary-button @click.native="confirmingPaycheckDeletion = false">
+        Nevermind
+      </tyr-secondary-button>
+
+      <tyr-danger-button class="ml-2" @click.native="destroyPaycheck" :class="{ 'opacity-25': pendingWorking }" :disabled="pendingWorking">
+        Delete Account
+      </tyr-danger-button>
+    </template>
+  </tyr-dialog-modal>
   </Layout>
 </template>
 
@@ -138,8 +178,12 @@ import TyrButton from '../../Components/Button.vue'
 import TyrTable from '../../Components/Table.vue'
 import TyrTableHeading from '../../Components/TableHeading.vue'
 import TyrTableData from '../../Components/TableData.vue'
+import TyrDialogModal from '../../Components/DialogModal.vue'
+import TyrSecondaryButton from '../../Components/SecondaryButton.vue'
+import TyrDangerButton from '../../Components/DangerButton.vue'
 import { ref, computed } from 'vue'
 import { DateTime } from 'luxon'
+import { Inertia } from '@inertiajs/inertia'
 
 const makeGroup = (label, fields) => ({ label, fields });
 const makeField = (name, label, val) => ({ name, label, val });
@@ -204,7 +248,10 @@ export default {
     TyrButton,
     TyrTable,
     TyrTableHeading,
-    TyrTableData
+    TyrTableData,
+    TyrDialogModal,
+    TyrSecondaryButton,
+    TyrDangerButton
   },
   setup(props) {
     const pendingPaycheck = ref({})
@@ -217,13 +264,30 @@ export default {
       return DateTime.fromISO(firstPaycheck.date).toLocaleString({ month: 'long' })
     })
 
+    function deletePaycheck(paycheck) {
+      pendingPaycheck.value = paycheck
+      confirmingPaycheckDeletion.value = true
+    }
+
+    async function destroyPaycheck() {
+      pendingWorking.value = true
+      console.log({
+        pendingPaycheck,
+        pendingPaycheckValue: pendingPaycheck.value
+      })
+      const response = await Inertia.delete(`/paychecks/${pendingPaycheck.value.id}`)
+      pendingPaycheck.value = false
+    }
+
     return {
       fieldGroups,
       pendingPaycheck,
       pendingWorking,
       confirmingPaycheckDeletion,
       tableData,
-      latestCompletedMonth
+      latestCompletedMonth,
+      deletePaycheck,
+      destroyPaycheck
     }
   }
 }

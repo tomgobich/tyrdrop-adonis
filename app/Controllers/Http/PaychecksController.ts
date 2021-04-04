@@ -36,6 +36,9 @@ export default class PaychecksController {
   public async update ({}: HttpContextContract) {
   }
 
-  public async destroy ({}: HttpContextContract) {
+  public async destroy ({ response, params }: HttpContextContract) {
+    const paycheck = await Paycheck.findOrFail(params.id)
+    await paycheck.delete()
+    return response.redirect('/paychecks')
   }
 }

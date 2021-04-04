@@ -28,12 +28,15 @@ Route.post('/login',              'AuthController.login').middleware(['guest'])
 Route.post('/logout',             'AuthController.logout')
 
 /* General */
-Route.get('/',                    'HomeController.index')
+Route.get('/',                    'HomeController.index').middleware(['guest'])
 
 /* Dashboard */
-Route.get('/dashboard', 					'DashboardController.index')
+Route.get('/dashboard', 					'DashboardController.index').middleware(['auth'])
 
 /* Paychecks */
-Route.get('/paychecks/new',       'PaychecksController.create')
-Route.get('/paychecks/:year?',    'PaychecksController.index')
-Route.post('/paychecks/store',    'PaychecksController.store')
+Route.group(() => {
+	Route.get('/new',       				'PaychecksController.create')
+	Route.get('/:year?',    				'PaychecksController.index')
+	Route.post('/store',    				'PaychecksController.store')
+	Route.delete('/:id',						'PaychecksController.destroy')
+}).prefix('/paychecks').middleware(['auth'])
