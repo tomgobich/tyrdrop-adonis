@@ -47,15 +47,10 @@
       }
     },
     created() {
-      const closeOnEscape = (e) => {
-        if (this.open && e.keyCode === 27) {
-          this.open = false
-        }
-      }
-      document.addEventListener('keydown', closeOnEscape)
+      document.addEventListener('keydown', (e) => this.closeOnEscape(e))
     },
-    destroyed() {
-      document.removeEventListener('keydown', closeOnEscape)
+    unmounted() {
+      document.removeEventListener('keydown', (e) => this.closeOnEscape(e))
     },
     computed: {
       widthClass() {
@@ -70,6 +65,13 @@
           return 'origin-top-right right-0'
         } else {
           return 'origin-top'
+        }
+      },
+    },
+    methods: {
+      closeOnEscape(e) {
+        if (this.open && e.keyCode === 27) {
+          this.open = false
         }
       },
     }
