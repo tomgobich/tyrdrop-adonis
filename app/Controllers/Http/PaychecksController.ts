@@ -20,25 +20,43 @@ export default class PaychecksController {
     return inertia.render('Paychecks/New', { lastPaycheck })
   }
 
-  public async store ({ request, response, auth }: HttpContextContract) {
+  public async store ({ request, response, auth, session }: HttpContextContract) {
     const data = await request.validate(PaycheckValidator)
     await Paycheck.create({ ...data, userId: auth.user?.id })
 
-    return response.redirect('/paychecks')
+    session.flash('success', 'Your new paycheck has been saved')
+
+    return response.redirect().toRoute('paychecks.index')
   }
 
   public async show ({}: HttpContextContract) {
   }
 
-  public async edit ({}: HttpContextContract) {
-  }
-
-  public async update ({}: HttpContextContract) {
-  }
-
-  public async destroy ({ response, params }: HttpContextContract) {
+  public async edit ({ inertia, params }: HttpContextContract) {
     const paycheck = await Paycheck.findOrFail(params.id)
+
+    return inertia.render('Paychecks/New', { paycheck })
+  }
+
+  public async update ({ request, response, params, session }: HttpContextContract) {
+    const data = await request.validate(PaycheckValidator)
+    const paycheck = await Paycheck.findOrFail(params.id)
+
+    paycheck.merge(data)
+    await paycheck.save()
+
+    session.flash('success', 'Your paycheck has been successfully updated')
+
+    response.redirect().status(303).toRoute('paychecks.index')
+  }
+
+  public async destroy ({ response, params, session }: HttpContextContract) {
+    const paycheck = await Paycheck.findOrFail(params.id)
+    
     await paycheck.delete()
-    return response.redirect('/paychecks')
+
+    session.flash('success', 'Your paycheck has been deleted')
+    
+    return response.redirect().status(303).toRoute('paychecks.index')
   }
 }

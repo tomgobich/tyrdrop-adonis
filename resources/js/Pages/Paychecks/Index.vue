@@ -43,7 +43,7 @@
         <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4 px-3 sm:px-0">
           Paychecks
         </h3>
-        <div v-if="!paychecks.length" class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
+        <div v-show="!paychecks.length" class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
           <div class="prose">
             <h3>
               No Recorded Paychecks for {{ year }}
@@ -64,7 +64,7 @@
             Add A New Paycheck
           </tyr-button>
         </div>
-        <div v-else class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+        <div v-show="paychecks.length" class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
           <tyr-table>
             <template #head>
               <tyr-table-heading>Category</tyr-table-heading>
@@ -271,12 +271,10 @@ export default {
 
     async function destroyPaycheck() {
       pendingWorking.value = true
-      console.log({
-        pendingPaycheck,
-        pendingPaycheckValue: pendingPaycheck.value
-      })
+      confirmingPaycheckDeletion.value = false
       const response = await Inertia.delete(`/paychecks/${pendingPaycheck.value.id}`)
-      pendingPaycheck.value = false
+      pendingWorking.value = false
+      pendingPaycheck.value = null
     }
 
     return {

@@ -7,7 +7,7 @@
     </template>
 
     <div class="py-12 max-w-7xl mx-auto sm:px-6 lg:px-8">
-      <form @submit.prevent="form.post('/paychecks/store')">
+      <form @submit.prevent="paycheck ? form.put(`/paychecks/${paycheck.id}/update`) : form.post('/paychecks/store')">
         <tyr-form-section>
           <template #title>
             Paycheck Information
@@ -15,7 +15,7 @@
 
           <template #description>
             Financial information that can be found on your paycheck.
-            <tyr-button @click.native="copyValuesFromLast" class="mt-3" type="button">
+            <tyr-button v-if="lastPaycheck" @click.native="copyValuesFromLast" class="mt-3" type="button">
               Copy values from last paycheck
             </tyr-button>
           </template>
@@ -164,8 +164,8 @@
     makeField('hsa_balance', 'HSA Balance', 0),
     makeField('savings_balance', 'Savings Balance', 0),
     makeField('debt', 'Debt Snapshot', 0),
-    makeField('home_mortgage', 'Mortgage', 0),
-    makeField('home_equity', 'Home Equity', 0),
+    makeField('home_mortgage', 'Mortgage Balance', 0),
+    makeField('home_equity', 'Home Equity Snapshot', 0),
     makeField('home_value', 'Home Value Snapshot', 0),
   ];
 
@@ -175,7 +175,8 @@
 
   export default {
     props: {
-      lastPaycheck: Object
+      lastPaycheck: Object,
+      paycheck: Object
     },
     components: {
       Layout,
@@ -192,6 +193,17 @@
         'notes': '',
         ...paycheckFormFields
       })
+
+      if (props.paycheck) {
+        for (let key in props.paycheck) {
+          if (key === 'date') {
+            form.value[key] = DateTime.fromISO(props.paycheck.date).toFormat('yyyy-MM-dd')
+            continue
+          }
+
+          form.value[key] = props.paycheck[key]
+        }
+      }
 
       function copyValuesFromLast() {
         const fields = getFormFields(props.lastPaycheck)

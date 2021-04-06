@@ -35,8 +35,10 @@ Route.get('/dashboard', 					'DashboardController.index').middleware(['auth'])
 
 /* Paychecks */
 Route.group(() => {
-	Route.get('/new',       				'PaychecksController.create')
-	Route.get('/:year?',    				'PaychecksController.index')
-	Route.post('/store',    				'PaychecksController.store')
-	Route.delete('/:id',						'PaychecksController.destroy')
-}).prefix('/paychecks').middleware(['auth'])
+	Route.get('/new',       				'PaychecksController.create').as('create')
+	Route.get('/:year?',    				'PaychecksController.index').as('index')
+	Route.post('/store',    				'PaychecksController.store').as('store')
+  Route.get('/:id/edit',          'PaychecksController.edit').as('edit')
+  Route.put('/:id/update',        'PaychecksController.update').as('update')
+	Route.delete('/:id',						'PaychecksController.destroy').as('destroy')
+}).prefix('/paychecks').as('paychecks').middleware(['auth'])
