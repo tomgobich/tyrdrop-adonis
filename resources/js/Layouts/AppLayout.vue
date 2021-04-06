@@ -20,7 +20,7 @@
             <!-- Logo -->
             <div class="flex-shrink-0 flex items-center">
               <inertia-link href="/dashboard">
-                <img class="block h-9 w-auto" src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg" alt="Workflow">
+                <tyr-logo></tyr-logo>
               </inertia-link>
             </div>
 
@@ -171,6 +171,7 @@
 </template>
 
 <script>
+import TyrLogo from '../Components/Logo.vue'
 import TyrToast from '../Components/Toast.vue'
 import TyrNavLink from '../Components/NavLink.vue'
 import TyrResponsiveNavLink from '../Components/ResponsiveNavLink.vue'
@@ -184,6 +185,7 @@ export default {
   },
   
   components: { 
+    TyrLogo,
     TyrToast,
     TyrNavLink,
     TyrResponsiveNavLink,
