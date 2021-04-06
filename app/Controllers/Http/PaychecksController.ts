@@ -9,7 +9,7 @@ export default class PaychecksController {
     const year = params.year ?? DateTime.utc().year
     const { yearStart, yearEnd } = PaycheckService.getYearStartAndEnd(year);
     const years = await PaycheckService.getPaycheckYears(auth.user)
-    const paychecks = auth.user?.related('paychecks').query().where('date', '>=', yearStart).where('date', '<=', yearEnd)
+    const paychecks = auth.user?.related('paychecks').query().where('date', '>=', yearStart).where('date', '<=', yearEnd).orderBy('date', 'desc')
 
     return inertia.render('Paychecks/Index', { paychecks, years, year })
   }

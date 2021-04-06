@@ -2,7 +2,7 @@
   <Layout>
     <template #header>
       <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Add New Paycheck
+        {{ paycheck ? 'Edit Paycheck' : 'Add New Paycheck' }}
       </h2>
     </template>
 
@@ -115,7 +115,7 @@
               {{ form.progress.percentage }}%
             </progress>
             <tyr-button :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-              Save
+              {{ paycheck ? 'Update Paycheck' : 'Save Paycheck' }}
             </tyr-button>
           </template>
         </tyr-form-section>
@@ -187,6 +187,10 @@
       TyrTextarea,
       TyrCurrencyInput
     },
+    mounted() {
+      console.log({ ref: this.$refs.gross_income })
+      this.$refs.gross_income.inputRef.focus()
+    },
     setup(props) {
       const form = useForm({
         'date': DateTime.local().toFormat('yyyy-MM-dd'),
@@ -231,7 +235,7 @@
         deductionFields,
         snapshotFields,
         form,
-        copyValuesFromLast,
+        copyValuesFromLast
       }
     }
   }

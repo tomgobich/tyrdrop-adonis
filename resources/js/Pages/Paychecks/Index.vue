@@ -68,7 +68,7 @@
           <tyr-table>
             <template #head>
               <tyr-table-heading>Category</tyr-table-heading>
-              <tyr-table-heading v-for="paycheck in tableData" :key="paycheck.id">
+              <tyr-table-heading v-for="paycheck in tableData" :key="paycheck.id" class="w-32">
                 <tyr-dropdown align="left">
                   <template #trigger>
                     <button class="w-full group flex justify-end hover:text-gray-700 focus-within:text-gray-700 items-center border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition duration-300 ease-in-out">
@@ -99,13 +99,12 @@
                 </tr>
                 <template v-for="field in group.fields" :key="field.name">
                   <tr v-if="group.label !== 'Annotations'">
-                    <tyr-table-data className="font-bold">
+                    <tyr-table-data className="font-semibold">
                       {{ field.label }}
                     </tyr-table-data>
 
-                    <!-- display as currency -->
                     <tyr-table-data v-for="paycheck in paychecks" :key="paycheck.id" align="right">
-                      {{ paycheck[field.name] }} 
+                      {{ asCurrency(paycheck[field.name]) }} 
                     </tyr-table-data>
                   </tr>
                   <tr v-else>
@@ -201,14 +200,14 @@ const taxFields = [
 ];
 const deductionFields = [
   makeField('health_insurance', 'Medical', 0),
-  makeField('401k_contribution', '401k Contribution', 0),
+  makeField('k_contribution', '401k Contribution', 0),
   makeField('ira_contribution', 'IRA Contribution', 0),
   makeField('taxable_inv_contribution', 'Investment Contribution', 0),
   makeField('hsa_contribution', 'HSA Contribution', 0),
   makeField('home_equity_contribution', 'Home Equity Contribution', 0),
 ];
 const snapshotFields = [
-  makeField('401k_balance', '401k Snapshot', 0),
+  makeField('k_balance', '401k Snapshot', 0),
   makeField('ira_balance', 'IRA Snapshot', 0),
   makeField('taxable_inv_balance', 'Investment Snapshot', 0),
   makeField('hsa_balance', 'HSA Balance', 0),
@@ -277,6 +276,10 @@ export default {
       pendingPaycheck.value = null
     }
 
+    function asCurrency(value) {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+    }
+
     return {
       fieldGroups,
       pendingPaycheck,
@@ -285,7 +288,8 @@ export default {
       tableData,
       latestCompletedMonth,
       deletePaycheck,
-      destroyPaycheck
+      destroyPaycheck,
+      asCurrency
     }
   }
 }
