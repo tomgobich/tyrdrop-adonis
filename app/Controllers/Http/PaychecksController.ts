@@ -1,26 +1,27 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Paycheck from 'App/Models/Paycheck';
-import PaycheckService from 'App/Services/PaycheckService';
-import PaycheckValidator from 'App/Validators/PaycheckValidator';
-import { DateTime } from 'luxon';
+import Paycheck from 'App/Models/Paycheck'
+import PaycheckService from 'App/Services/PaycheckService'
+import PaycheckValidator from 'App/Validators/PaycheckValidator'
+import User from 'App/Models/User'
+import { DateTime } from 'luxon'
 
 export default class PaychecksController {
-  public async index ({ inertia, auth, params }: HttpContextContract) {
+  public async index({ inertia, auth, params }: HttpContextContract) {
+    const paycheckService = new PaycheckService(<User>auth.user)
     const year = params.year ?? DateTime.utc().year
-    const { yearStart, yearEnd } = PaycheckService.getYearStartAndEnd(year);
-    const years = await PaycheckService.getPaycheckYears(auth.user)
-    const paychecks = auth.user?.related('paychecks').query().where('date', '>=', yearStart).where('date', '<=', yearEnd).orderBy('date', 'desc')
+    const years = await paycheckService.getPaycheckYears()
+    const paychecks = await paycheckService.getPaychecks(year)
 
     return inertia.render('Paychecks/Index', { paychecks, years, year })
   }
 
-  public async create ({ inertia, auth }: HttpContextContract) {
+  public async create({ inertia, auth }: HttpContextContract) {
     const lastPaycheck = auth.user?.related('paychecks').query().orderBy('date', 'desc').first()
 
     return inertia.render('Paychecks/New', { lastPaycheck })
   }
 
-  public async store ({ request, response, auth, session }: HttpContextContract) {
+  public async store({ request, response, auth, session }: HttpContextContract) {
     const data = await request.validate(PaycheckValidator)
     await Paycheck.create({ ...data, userId: auth.user?.id })
 
@@ -29,16 +30,16 @@ export default class PaychecksController {
     return response.redirect().toRoute('paychecks.index')
   }
 
-  public async show ({}: HttpContextContract) {
+  public async show({ }: HttpContextContract) {
   }
 
-  public async edit ({ inertia, params }: HttpContextContract) {
+  public async edit({ inertia, params }: HttpContextContract) {
     const paycheck = await Paycheck.findOrFail(params.id)
 
     return inertia.render('Paychecks/New', { paycheck })
   }
 
-  public async update ({ request, response, params, session }: HttpContextContract) {
+  public async update({ request, response, params, session }: HttpContextContract) {
     const data = await request.validate(PaycheckValidator)
     const paycheck = await Paycheck.findOrFail(params.id)
 
@@ -50,13 +51,13 @@ export default class PaychecksController {
     response.redirect().status(303).toRoute('paychecks.index')
   }
 
-  public async destroy ({ response, params, session }: HttpContextContract) {
+  public async destroy({ response, params, session }: HttpContextContract) {
     const paycheck = await Paycheck.findOrFail(params.id)
-    
+
     await paycheck.delete()
 
     session.flash('success', 'Your paycheck has been deleted')
-    
+
     return response.redirect().status(303).toRoute('paychecks.index')
   }
 }

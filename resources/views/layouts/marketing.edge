@@ -27,7 +27,9 @@
 
         <div v-else class="hidden sm:flex sm:items-center sm:ml-6">
           <a href="/login" class="mr-6">Login</a>
-          <tyr-button href="/register" out>Register</tyr-button>
+          @component('components/button', { href: '/register' })
+            Register
+          @endcomponent
         </div>
 
         <!-- Hamburger -->
@@ -46,7 +48,9 @@
     <div :class="{'block': showingNavigationDropdown, 'hidden': ! showingNavigationDropdown}" class="sm:hidden">
       <div v-else class="pt-4 pb-1 border-t border-gray-200 flex flex-column w-full">
         <a href="/login" class="mr-6">Login</a>
-        <tyr-button href="/register" out>Register</tyr-button>
+        @component('components/button', { href: '/register' })
+          Register
+        @endcomponent
       </div>
     </div>
   </nav>
