@@ -11,8 +11,13 @@ export default class PaychecksController {
     const year = params.year ?? DateTime.utc().year
     const years = await paycheckService.getPaycheckYears()
     const paychecks = await paycheckService.getPaychecks(year)
+    
+    let summary;
+    if (paychecks.length) {
+      summary = await paycheckService.getSummary(paychecks[0])
+    }
 
-    return inertia.render('Paychecks/Index', { paychecks, years, year })
+    return inertia.render('Paychecks/Index', { paychecks, years, year, summary })
   }
 
   public async create({ inertia, auth }: HttpContextContract) {

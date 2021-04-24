@@ -1,6 +1,7 @@
 import Database from "@ioc:Adonis/Lucid/Database";
 import Paycheck from "App/Models/Paycheck";
 import User from "App/Models/User";
+import Summary from "Contracts/Types/Summary";
 import { DateTime } from "luxon";
 import DateService from "./DateService";
 
@@ -35,27 +36,83 @@ export default class PaycheckService {
   }
 
   public async getSummary(paycheck: Paycheck) {
-    const priorYearPaycheck = this.getMonthPaycheckFromPriorYear(paycheck);
-    const yearsPaychecks = this.getPaychecks(paycheck.date.year)
-    const priorYearsPaychecks = this.getPaychecks(paycheck.date.year - 1)
+    const priorYearPaycheck = await this.getMonthPaycheckFromPriorYear(paycheck)
+    const yearsPaychecks = await this.getPaychecks(paycheck.date.year)
+    const priorYearsPaychecks = await this.getPaychecks(paycheck.date.year - 1)
 
-    // // 1. Net Worth
-    // $netWorth = $this->getNetWorthSummary($paycheck, $previousPaycheck);
+    /**
+     * TODO
+     * Currently priorYearsPaychecks is pulling the entirety of the prior year.
+     * Need to change this to only pull UP TO the current month + day in that year
+     */
 
-    // // 2. Gross Income
-    // $grossIncome = $this->getGrossIncomeSummary($yearsPaychecks, $previousYearsPaychecks);
+    // 1. Net Worth
+    const netWorth = this.getNetWorthSummary(paycheck, priorYearPaycheck)
 
-    // // 3. Net Income
-    // $netIncome = $this->getNetIncomeSummary($yearsPaychecks, $previousYearsPaychecks);
+    // 2. Gross Income
+    const grossIncome = this.getGrossIncomeSummary(yearsPaychecks, priorYearsPaychecks)
+    
+    // 3. Net Income
+    const netIncome = this.getNetIncomeSummary(yearsPaychecks, priorYearsPaychecks)
 
-    // // 4. Investment Balance
-    // $investmentBalance = $this->getInvestmentBalanceSummary($paycheck, $previousPaycheck);
+    // 4. Investment Balance
+    const invBalance = this.getInvestmentBalanceSummary(paycheck, priorYearPaycheck)
 
-    // // 5. Investment Contribution
-    // $investmentContribution = $this->getInvestmentContributionSummary($yearsPaychecks, $previousYearsPaychecks);
+    // 5. YTD Investment Contributions
+    const invContributionsYTD = this.getInvestmentContributionYTDSummary(yearsPaychecks, priorYearsPaychecks)
 
-    // // 6. Home Equity
-    // $homeEquityBalance = $this->getHomeEquitySummary($paycheck, $previousPaycheck);
+    return {
+      netWorth,
+      grossIncome,
+      netIncome,
+      invBalance,
+      invContributionsYTD
+    }
+  }
+
+  private getNetWorthSummary(paycheck: Paycheck, previousPaycheck: Paycheck|null) {
+    const summary = new Summary()
+    summary.title = 'Net Worth'
+    summary.current = paycheck.netWorth
+    summary.previous = previousPaycheck?.netWorth
+    return summary
+  }
+
+  private getGrossIncomeSummary(yearsPaychecks: Array<Paycheck>, previousYearsPaychecks: Array<Paycheck>|null) {
+    const summary = new Summary()
+    summary.title = 'Gross Income'
+    summary.current = yearsPaychecks.reduce((prev, curr) => prev + curr.grossIncome, 0)
+    summary.previous = previousYearsPaychecks?.reduce((prev, curr) => prev + curr.grossIncome, 0)
+    return summary
+  }
+
+  private getNetIncomeSummary(yearsPaychecks: Array<Paycheck>, previousYearsPaychecks: Array<Paycheck>|null) {
+    const summary = new Summary()
+    summary.title = 'Net Income'
+    summary.current = yearsPaychecks.reduce((prev, curr) => prev + curr.netIncome, 0)
+    summary.previous = previousYearsPaychecks?.reduce((prev, curr) => prev + curr.netIncome, 0)
+    return summary
+  }
+
+  private getInvestmentBalanceSummary(paycheck: Paycheck, previousPaycheck: Paycheck|null) {
+    const summary = new Summary()
+    summary.title = 'Investment Balance'
+    summary.current = paycheck.investmentBalance
+    summary.previous = previousPaycheck?.investmentBalance
+    return summary
+  }
+
+  private getInvestmentContributionYTDSummary(yearsPaychecks: Array<Paycheck>, previousYearsPaychecks: Array<Paycheck>|null) {
+    const summary = new Summary()
+    summary.title = 'YTD Investment Contributions'
+    summary.current = yearsPaychecks.reduce((prev, curr) => prev + curr.investmentContributions, 0)
+    summary.previous = previousYearsPaychecks?.reduce((prev, curr) => prev + curr.investmentContributions, 0)
+    return summary
+  }
+
+  public getPercentageChange(oldValue: number, newValue: number) {
+    const decreaseValue = oldValue - newValue
+    return (decreaseValue / oldValue) * 100
   }
 
   /**

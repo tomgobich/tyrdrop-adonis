@@ -13,9 +13,9 @@ Read the documentation to get started: https://tailwindui.com/documentation
             </dt>
             <dd class="mt-1 flex justify-between items-baseline md:block lg:flex">
               <div class="flex items-baseline text-2xl leading-8 font-semibold text-indigo-600">
-                {{ stat.current | currency }}
+                {{ asCurrency(stat.current) }}
                 <span class="ml-2 text-sm leading-5 font-medium text-gray-500">
-                from {{ stat.previous | currency }}
+                from {{ asCurrency(stat.previous) }}
               </span>
               </div>
               <div v-if="stat.diff > 0" class="inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium leading-5 bg-green-100 text-green-800 md:mt-2 lg:mt-0">
@@ -25,7 +25,7 @@ Read the documentation to get started: https://tailwindui.com/documentation
                 <span class="sr-only">
                   Increased by
                 </span>
-                {{ stat.diff }}%
+                {{ getDisplayDiff(stat.diff) }}%
               </div>
               <div v-else-if="stat.diff < 0" class="inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium leading-5 bg-red-100 text-red-800 md:mt-2 lg:mt-0">
                 <svg class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
@@ -34,7 +34,7 @@ Read the documentation to get started: https://tailwindui.com/documentation
                 <span class="sr-only">
                   Decreased by
                 </span>
-                {{ stat.diff }}%
+                {{ getDisplayDiff(stat.diff) }}%
               </div>
             </dd>
           </dl>
@@ -48,6 +48,16 @@ Read the documentation to get started: https://tailwindui.com/documentation
 export default {
   props: {
     stats: Array
+  },
+
+  methods: {
+    getDisplayDiff(diff) {
+      return diff.toLocaleString('fullwide', { maximumFractionDigits: 2 })
+    },
+
+    asCurrency(value) {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+    }
   }
 }
 </script>

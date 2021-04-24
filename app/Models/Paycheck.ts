@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, column, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, belongsTo, column, BelongsTo, computed } from '@ioc:Adonis/Lucid/Orm'
 import User from './User'
 
 export default class Paycheck extends BaseModel {
@@ -92,4 +92,21 @@ export default class Paycheck extends BaseModel {
 
   @belongsTo(() => User)
   public user: BelongsTo<typeof User>
+
+  @computed()
+  public get netWorth() {
+    const assets = this.kBalance + this.iraBalance + this.taxableInvBalance + this.savingsBalance + this.hsaBalance + this.homeValue
+    const liabilities = this.debt + this.homeMortgage
+    return assets - liabilities
+  }
+
+  @computed()
+  public get investmentBalance() {
+    return this.kBalance + this.iraBalance + this.taxableInvBalance
+  }
+
+  @computed()
+  public get investmentContributions() {
+    return this.kContribution + this.iraContribution + this.taxableInvContribution
+  }
 }

@@ -3,7 +3,7 @@
     <template #header>
       <div class="md:flex justify-between">
         <div class="font-semibold text-xl text-gray-800 leading-tight space-x-2 flex items-center">
-          <h2 class="font-bold">
+          <h2 class="font-semibold">
             Paychecks
           </h2>
           <span>/</span>
@@ -38,7 +38,7 @@
         <h3 v-if="summary !== null" class="text-lg leading-6 font-medium text-gray-900 px-3 sm:px-0">
           Summary <span class="opacity-50 italic text-sm">(compared to {{ latestCompletedMonth }} {{ year - 1}})</span>
         </h3>
-        <!-- <tyr-stat-bar v-if="summary !== null" :stats="summary" class="mb-8" /> -->
+        <tyr-stat-bar v-if="summary !== null" :stats="summary" class="mb-8"></tyr-stat-bar>
 
         <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4 px-3 sm:px-0">
           Paychecks
@@ -93,13 +93,13 @@
             <template #rows>
               <template v-for="group in fieldGroups" :key="group.label">
                 <tr>
-                  <tyr-table-data :colspan="tableData.length + 1" class="font-bold text-lg bg-gray-50">
+                  <tyr-table-data :colspan="tableData.length + 1" class="font-semibold text-lg bg-gray-50">
                     {{ group.label }}
                   </tyr-table-data>
                 </tr>
                 <template v-for="field in group.fields" :key="field.name">
                   <tr v-if="group.label !== 'Annotations'">
-                    <tyr-table-data className="font-semibold">
+                    <tyr-table-data>
                       {{ field.label }}
                     </tyr-table-data>
 
@@ -108,7 +108,7 @@
                     </tyr-table-data>
                   </tr>
                   <tr v-else>
-                    <tyr-table-data className="font-bold">
+                    <tyr-table-data>
                       {{ field.label }}
                     </tyr-table-data>
 
@@ -180,6 +180,7 @@ import TyrTableData from '../../Components/TableData.vue'
 import TyrDialogModal from '../../Components/DialogModal.vue'
 import TyrSecondaryButton from '../../Components/SecondaryButton.vue'
 import TyrDangerButton from '../../Components/DangerButton.vue'
+import TyrStatBar from '../../Components/StatBar.vue'
 import { ref, computed } from 'vue'
 import { DateTime } from 'luxon'
 import { Inertia } from '@inertiajs/inertia'
@@ -250,7 +251,8 @@ export default {
     TyrTableData,
     TyrDialogModal,
     TyrSecondaryButton,
-    TyrDangerButton
+    TyrDangerButton,
+    TyrStatBar
   },
   setup(props) {
     const pendingPaycheck = ref({})
