@@ -13,6 +13,17 @@ export default class DateService {
   }
 
   /**
+   * Gets the year start and date provided
+   * @param date 
+   * @returns 
+   */
+  public static getYearToDateStartAndEnd(date: string | DateTime = DateTime.utc()): Array<string> {
+    const yearStart = DateTime.fromISO(date.toString()).startOf('year').toSQLDate()
+    const toDate = DateTime.fromISO(date.toString()).toSQLDate()
+    return [yearStart, toDate]
+  }
+
+  /**
    * Gets the month start and month end date for provided date
    * @param date 
    * @returns 

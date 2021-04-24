@@ -1,5 +1,6 @@
 import { createApp, h, inject } from 'vue'
 import { App, plugin } from '@inertiajs/inertia-vue3'
+import VueApexCharts from 'vue3-apexcharts'
 import Cookies from 'js-cookie'
 import axios from 'axios'
 
@@ -13,4 +14,4 @@ createApp({
     initialPage,
     resolveComponent: name => require(`./Pages/${name}`).default,
   })
-}).use(plugin).mount(el)
+}).use(plugin).use(VueApexCharts).mount(el)

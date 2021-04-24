@@ -38,16 +38,11 @@ export default class PaycheckService {
   public async getSummary(paycheck: Paycheck) {
     const priorYearPaycheck = await this.getMonthPaycheckFromPriorYear(paycheck)
     const yearsPaychecks = await this.getPaychecks(paycheck.date.year)
-    const priorYearsPaychecks = await this.getPaychecks(paycheck.date.year - 1)
-
-    /**
-     * TODO
-     * Currently priorYearsPaychecks is pulling the entirety of the prior year.
-     * Need to change this to only pull UP TO the current month + day in that year
-     */
+    const priorYearsPaychecks = await this.getPaychecksYTD(paycheck.date.minus({ year: 1 }))
 
     // 1. Net Worth
     const netWorth = this.getNetWorthSummary(paycheck, priorYearPaycheck)
+    const netWorthChart = this.getNetWorthChart(yearsPaychecks)
 
     // 2. Gross Income
     const grossIncome = this.getGrossIncomeSummary(yearsPaychecks, priorYearsPaychecks)
@@ -62,11 +57,16 @@ export default class PaycheckService {
     const invContributionsYTD = this.getInvestmentContributionYTDSummary(yearsPaychecks, priorYearsPaychecks)
 
     return {
-      netWorth,
-      grossIncome,
-      netIncome,
-      invBalance,
-      invContributionsYTD
+      summaries: {
+        netWorth,
+        grossIncome,
+        netIncome,
+        invBalance,
+        invContributionsYTD
+      },
+      charts: {
+        netWorth: netWorthChart
+      }
     }
   }
 
@@ -76,6 +76,19 @@ export default class PaycheckService {
     summary.current = paycheck.netWorth
     summary.previous = previousPaycheck?.netWorth
     return summary
+  }
+
+  private getNetWorthChart(yearsPaychecks: Array<Paycheck>) {
+    return {
+      series: [{
+        name: 'Net Worth',
+        data: yearsPaychecks.map(paycheck => paycheck.netWorth.toFixed(2))
+      }],
+      xaxis: {
+        type: 'datetime',
+        categories: yearsPaychecks.map(paycheck => paycheck.date)
+      }
+    }
   }
 
   private getGrossIncomeSummary(yearsPaychecks: Array<Paycheck>, previousYearsPaychecks: Array<Paycheck>|null) {
@@ -124,5 +137,10 @@ export default class PaycheckService {
   public async getMonthPaycheckFromPriorYear(paycheck: Paycheck) {
     const [from, to] = DateService.getMonthStartAndEnd(paycheck.date.minus({ year: 1 }).toISO())
     return this.user.related('paychecks').query().whereBetween('date', [from, to]).orderBy('date', 'desc').first()
+  }
+
+  public async getPaychecksYTD(date: string | DateTime) {
+    const [from, to] = DateService.getYearToDateStartAndEnd(date)
+    return this.user.related('paychecks').query().whereBetween('date', [from, to]).orderBy('date', 'desc')
   }
 }

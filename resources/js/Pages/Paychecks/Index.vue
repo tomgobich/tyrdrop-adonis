@@ -35,10 +35,22 @@
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <h3 v-if="summary !== null" class="text-lg leading-6 font-medium text-gray-900 px-3 sm:px-0">
-          Summary <span class="opacity-50 italic text-sm">(compared to {{ latestCompletedMonth }} {{ year - 1}})</span>
-        </h3>
-        <tyr-stat-bar v-if="summary !== null" :stats="summary" class="mb-8"></tyr-stat-bar>
+        <div v-if="summary !== null">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 px-3 sm:px-0">
+            Summary <span class="opacity-50 italic text-sm">(compared to {{ latestCompletedMonth }} {{ year - 1}})</span>
+          </h3>
+          <div class="flex flex-wrap -mx-3">
+            <div class="w-full md:w-1/3 lg:w-1/3 px-3">
+              <tyr-stat-bar v-if="summary.summaries !== null" :stats="summary.summaries" class="mb-8"></tyr-stat-bar>
+            </div>
+            <div class="w-full md:w-2/3 lg:w-2/3 px-3">
+              <tyr-chart-spline-area
+                :series="summary.charts.netWorth.series"
+                :xaxis="summary.charts.netWorth.xaxis"
+              ></tyr-chart-spline-area>
+            </div>
+          </div>
+        </div>
 
         <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4 px-3 sm:px-0">
           Paychecks
@@ -181,6 +193,7 @@ import TyrDialogModal from '../../Components/DialogModal.vue'
 import TyrSecondaryButton from '../../Components/SecondaryButton.vue'
 import TyrDangerButton from '../../Components/DangerButton.vue'
 import TyrStatBar from '../../Components/StatBar.vue'
+import TyrChartSplineArea from '../../Components/ChartSplineArea.vue'
 import { ref, computed } from 'vue'
 import { DateTime } from 'luxon'
 import { Inertia } from '@inertiajs/inertia'
@@ -252,7 +265,8 @@ export default {
     TyrDialogModal,
     TyrSecondaryButton,
     TyrDangerButton,
-    TyrStatBar
+    TyrStatBar,
+    TyrChartSplineArea
   },
   setup(props) {
     const pendingPaycheck = ref({})

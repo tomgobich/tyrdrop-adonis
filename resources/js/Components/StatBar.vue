@@ -4,9 +4,9 @@ Tailwind UI components require Tailwind CSS v1.8 and the @tailwindcss/ui plugin.
 Read the documentation to get started: https://tailwindui.com/documentation
 -->
   <div>
-    <div class="mt-5 grid grid-cols-1 rounded-lg bg-white overflow-hidden shadow md:grid-cols-3">
+    <div class="mt-5 rounded-lg bg-white overflow-hidden shadow">
       <div v-for="(stat, i) in stats" :key="stat.title" :class="[{ 'border-t border-gray-200 md:border-0 md:border-l': i !== 0, 'md:border-t': i > 2 }]">
-        <div class="px-4 py-5 sm:p-6">
+        <div class="px-3 py-2">
           <dl>
             <dt class="text-base leading-6 font-normal text-gray-900">
               {{ stat.title }}
